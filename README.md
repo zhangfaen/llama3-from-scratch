@@ -4,10 +4,13 @@ in this file, i implemented llama3 from scratch, one tensor and matrix multiplic
 also, im going to load tensors directly from the model file that meta provided for llama3, you need to download the weights before running this file.
 here is the offical link to download the weights: https://llama.meta.com/llama-downloads/
 
+**Note:** In case it is not easy to download from above link, we put a snapshot at huggingface, you can download it from https://huggingface.co/zhangfaen/Meta-Llama-3-8B_checkpoint/ or run below command: 
+> $huggingface-cli download zhangfaen/Meta-Llama-3-8B_checkpoint  --local-dir Meta-Llama-3-8B/
+
+
 <div>
     <img src="images/archi.png"/>
 </div>
-
 ## tokenizer
 im not going to implement a bpe tokenizer (but andrej karpathy has a really clean implementation)
 <br>
