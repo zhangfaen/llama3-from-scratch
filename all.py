@@ -10,8 +10,10 @@ from tiktoken.load import load_tiktoken_bpe
 import torch
 import json
 
-# import pdb
-# pdb.set_trace()
+import pdb
+pdb.set_trace()
+
+
 
 tokenizer_path = "Meta-Llama-3-8B/tokenizer.model"
 special_tokens = [
@@ -26,13 +28,41 @@ special_tokens = [
             "<|reserved_special_token_4|>",
             "<|eot_id|>",  # end of turn
         ] + [f"<|reserved_special_token_{i}|>" for i in range(5, 256 - 5)]
+
+# Below is definition of load_tiktoken_bpe function
+#  143  def load_tiktoken_bpe(                                                                                                                                                                                
+#  144         tiktoken_bpe_file: str, expected_hash: Optional[str] = None                                                                                                                                       
+#  145     ) -> dict[bytes, int]:                                                                                                                                                                                
+#  146         # NB: do not add caching to this function                                                                                                                                                         
+#  147         contents = read_file_cached(tiktoken_bpe_file, expected_hash)                                                                                                                                     
+#  148         return {                                                                                                                                                                                          
+#  149             base64.b64decode(token): int(rank)                                                                                                                                                            
+#  150             for token, rank in (line.split() for line in contents.splitlines() if line)                                                                                                                   
+#  151         }  
 mergeable_ranks = load_tiktoken_bpe(tokenizer_path) # type(mergeable_ranks) is dict. len(mergeable_ranks) is 128000.
+
 tokenizer = tiktoken.Encoding(
     name="tokenizer.model",
     pat_str=r"(?i:'s|'t|'re|'ve|'m|'ll|'d)|[^\r\n\p{L}\p{N}]?\p{L}+|\p{N}{1,3}| ?[^\s\p{L}\p{N}]+[\r\n]*|\s*[\r\n]+|\s+(?!\S)|\s+",
     mergeable_ranks=mergeable_ranks,
     special_tokens={token: len(mergeable_ranks) + i for i, token in enumerate(special_tokens)},
 )
+
+# (Pdb++) tokenizer.encode("中国")
+# [59795]
+# (Pdb++) [k for k,v in mergeable_ranks.items() if v == 59795]
+# [b'\xe4\xb8\xad\xe5\x9b\xbd']
+
+# in python interpreter 
+# >>> "中国".encode()
+# b'\xe4\xb8\xad\xe5\x9b\xbd'
+# >>> import base64
+# >>> base64.b64encode(b'\xe4\xb8\xad\xe5\x9b\xbd')
+# b'5Lit5Zu9'
+
+# In tokenizer_path model file, there is a line: (it is text file, just vim it). 
+# every line is token def pair: b64encode of that token str into utf8 bytes and its rank.
+# b'5Lit5Zu9' 59795
 
 # Here, tokenizer.n_vocab is 128256
 
