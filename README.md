@@ -1,4 +1,7 @@
 # llama3 implemented from scratch
+
+<span style="background-color: #FFFF00">**Note This README is out of date, for more detail info, read llama3-from-scratch.ipynb or all.py in this repo.**</span>
+
 in this file, i implemented llama3 from scratch, one tensor and matrix multiplication at a time.
 <br>
 also, im going to load tensors directly from the model file that meta provided for llama3, you need to download the weights before running this file.
