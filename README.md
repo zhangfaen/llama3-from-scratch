@@ -1537,7 +1537,7 @@ next_token
 
 
 
-# lets fucking go
+# lets go
 <div>
     <img src="images/42.png" width="600px"/>
 </div>
@@ -1554,25 +1554,14 @@ tokenizer.decode([next_token.item()])
 
 
 
-# thank you, i love you :)
+# thank you
 
 This is the end. Hopefully you enjoyed reading it!
 
+**Note**: Much of this repo is based on https://github.com/naklecha/llama3-from-scratch, as I have made lots of changes, so I made a new repo instead of a fork.
+
+Many thanks to naklecha!
+
 If you want to support my work
 
-1. follow me on twitter https://twitter.com/naklecha 
-2. or, buy me a coffee [https://www.buymeacoffee.com/naklecha](https://www.buymeacoffee.com/naklecha)
-
-Honestly, if you made it this far you already made my day :)
-
-## what motivates me?
-
-My friends and I are on a mission - to make research more accessible!
-We created a research lab called A10 - [AAAAAAAAAA.org](http://aaaaaaaaaa.org/)
-
-A10 twitter - https://twitter.com/aaaaaaaaaaorg
-
-our thesis:
-<div>
-    <img src="images/a10.png" width="600px"/>
-</div>
+1. follow me on twitter https://twitter.com/zhangfaen
