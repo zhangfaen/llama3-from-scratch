@@ -10,10 +10,11 @@ from tiktoken.load import load_tiktoken_bpe
 import torch
 import json
 
-import pdb
-pdb.set_trace()
+# import pdb
+# pdb.set_trace()
 
-
+device = "cuda:0"
+# device = "cpu"
 
 tokenizer_path = "Meta-Llama-3-8B/tokenizer.model"
 special_tokens = [
@@ -66,39 +67,43 @@ tokenizer = tiktoken.Encoding(
 
 # Here, tokenizer.n_vocab is 128256
 
-model = torch.load("Meta-Llama-3-8B/consolidated.00.pth") # type(model) is dict. len(model) is 291.
+model = torch.load("Meta-Llama-3-8B/consolidated.00.pth", map_location=device) # type(model) is dict. len(model) is 291.
 
-for w in [(key, str(model[key].shape), str(model[key].dtype)) for key in model.keys()]:
-    print(w)
-# ('tok_embeddings.weight', 'torch.Size([128256, 4096])', 'torch.bfloat16')
-# ('layers.0.attention.wq.weight', 'torch.Size([4096, 4096])', 'torch.bfloat16')
-# ('layers.0.attention.wk.weight', 'torch.Size([1024, 4096])', 'torch.bfloat16')
-# ('layers.0.attention.wv.weight', 'torch.Size([1024, 4096])', 'torch.bfloat16')
-# ('layers.0.attention.wo.weight', 'torch.Size([4096, 4096])', 'torch.bfloat16')
-# ('layers.0.feed_forward.w1.weight', 'torch.Size([14336, 4096])', 'torch.bfloat16')
-# ('layers.0.feed_forward.w3.weight', 'torch.Size([14336, 4096])', 'torch.bfloat16')
-# ('layers.0.feed_forward.w2.weight', 'torch.Size([4096, 14336])', 'torch.bfloat16')
-# ('layers.0.attention_norm.weight', 'torch.Size([4096])', 'torch.bfloat16')
-# ('layers.0.ffn_norm.weight', 'torch.Size([4096])', 'torch.bfloat16')
-# ('layers.1.attention.wq.weight', 'torch.Size([4096, 4096])', 'torch.bfloat16')
-# ('layers.1.attention.wk.weight', 'torch.Size([1024, 4096])', 'torch.bfloat16')
-# ('layers.1.attention.wv.weight', 'torch.Size([1024, 4096])', 'torch.bfloat16')
-# ('layers.1.attention.wo.weight', 'torch.Size([4096, 4096])', 'torch.bfloat16')
-#                   ......  
-# ('layers.30.feed_forward.w2.weight', 'torch.Size([4096, 14336])', 'torch.bfloat16')
-# ('layers.30.attention_norm.weight', 'torch.Size([4096])', 'torch.bfloat16')
-# ('layers.30.ffn_norm.weight', 'torch.Size([4096])', 'torch.bfloat16')
-# ('layers.31.attention.wq.weight', 'torch.Size([4096, 4096])', 'torch.bfloat16')
-# ('layers.31.attention.wk.weight', 'torch.Size([1024, 4096])', 'torch.bfloat16')
-# ('layers.31.attention.wv.weight', 'torch.Size([1024, 4096])', 'torch.bfloat16')
-# ('layers.31.attention.wo.weight', 'torch.Size([4096, 4096])', 'torch.bfloat16')
-# ('layers.31.feed_forward.w1.weight', 'torch.Size([14336, 4096])', 'torch.bfloat16')
-# ('layers.31.feed_forward.w3.weight', 'torch.Size([14336, 4096])', 'torch.bfloat16')
-# ('layers.31.feed_forward.w2.weight', 'torch.Size([4096, 14336])', 'torch.bfloat16')
-# ('layers.31.attention_norm.weight', 'torch.Size([4096])', 'torch.bfloat16')
-# ('layers.31.ffn_norm.weight', 'torch.Size([4096])', 'torch.bfloat16')
-# ('norm.weight', 'torch.Size([4096])', 'torch.bfloat16')
-# ('output.weight', 'torch.Size([128256, 4096])', 'torch.bfloat16')
+total_params = sum([torch.prod(torch.tensor(p.shape)) for p in model.values()])
+print(f"total_params:{total_params}")
+for k,v in model.items():
+    print(k, v.shape, type(v), v.device, f"{torch.prod(torch.tensor(v.shape)) / total_params:.2%}")
+# total_params:8030261248
+# tok_embeddings.weight torch.Size([128256, 4096]) <class 'torch.Tensor'> cuda:0 6.54%
+# layers.0.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+# layers.0.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+# layers.0.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+# layers.0.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+# layers.0.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+# layers.0.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+# layers.0.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+# layers.0.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+# layers.0.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+# layers.1.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+# layers.1.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+# layers.1.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+# layers.1.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+# layers.1.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+# layers.1.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+# layers.1.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+# layers.1.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+# layers.1.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+# layers.2.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+# layers.2.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+# ......
+# layers.31.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+# layers.31.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+# layers.31.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+# layers.31.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+# layers.31.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+# layers.31.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+# norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+# output.weight torch.Size([128256, 4096]) <class 'torch.Tensor'> cuda:0 6.54%
 
 with open("Meta-Llama-3-8B/params.json", "r") as f:
     config = json.load(f)
@@ -117,11 +122,11 @@ rope_theta = torch.tensor(config["rope_theta"])
 prompt = "the answer to the ultimate question of life, the universe, and everything is "
 tokens = [128000] + tokenizer.encode(prompt)
 print(tokens)
-tokens = torch.tensor(tokens)
+tokens = torch.tensor(tokens, device=device)
 prompt_split_as_tokens = [tokenizer.decode([token.item()]) for token in tokens]
 print(prompt_split_as_tokens)
 
-embedding_layer = torch.nn.Embedding(vocab_size, dim)
+embedding_layer = torch.nn.Embedding(vocab_size, dim, device=device)
 embedding_layer.weight.data.copy_(model["tok_embeddings.weight"])
 token_embeddings_unnormalized = embedding_layer(tokens).to(torch.bfloat16)
 
@@ -131,14 +136,11 @@ def rms_norm(tensor, norm_weights):
 
 # We just use fixed number 64, as there are 32 heads for each layer, and hidden dim is 4096
 # 4096 / 32 = 128. A complex number has 2 parts, so 128 / 2 = 64.
-zero_to_one_split_into_64_parts = torch.tensor(range(64))/64
-
-import pdb
-pdb.set_trace()
+zero_to_one_split_into_64_parts = torch.tensor(range(64), device=device)/64
 
 freqs = 1.0 / (rope_theta ** zero_to_one_split_into_64_parts) # freqs.shape = (64,)
 
-freqs_for_each_token = torch.outer(torch.arange(17), freqs) # freqs_for_each_token.shape = (17, 64); freqs_for_each_token.dtype = torch.float32
+freqs_for_each_token = torch.outer(torch.arange(17, device=device), freqs) # freqs_for_each_token.shape = (17, 64); freqs_for_each_token.dtype = torch.float32
 freqs_cis = torch.polar(torch.ones_like(freqs_for_each_token), freqs_for_each_token) # freqs_cis.shape = (17, 64); freqs_cis.dtype = torch.complex64
 
 final_embedding = token_embeddings_unnormalized # final_embedding.shape = torch.Size([17, 4096])
@@ -168,7 +170,7 @@ for layer in range(n_layers): # n_layers = 32
         k_per_token_split_into_pairs_rotated = torch.view_as_real(k_per_token_as_complex_numbers * freqs_cis) # k_per_token_split_into_pairs_rotated.shape = torch.Size([17, 64, 2])
         k_per_token_rotated = k_per_token_split_into_pairs_rotated.view(k_per_token.shape) # k_per_token_rotated.shape = torch.Size([17, 128])
         qk_per_token = torch.matmul(q_per_token_rotated, k_per_token_rotated.T)/(128)**0.5 # qk_per_token.shape = torch.Size([17, 17])
-        mask = torch.full((len(token_embeddings_unnormalized), len(token_embeddings_unnormalized)), float("-inf"))
+        mask = torch.full((len(token_embeddings_unnormalized), len(token_embeddings_unnormalized)), float("-inf"), device=device)
         mask = torch.triu(mask, diagonal=1) # mask.shape = torch.Size([17, 17])
         qk_per_token_after_masking = qk_per_token + mask
         qk_per_token_after_masking_after_softmax = torch.nn.functional.softmax(qk_per_token_after_masking, dim=1).to(torch.bfloat16)

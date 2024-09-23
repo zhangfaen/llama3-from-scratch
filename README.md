@@ -86,10 +86,6 @@ tokenizer = tiktoken.Encoding(
 tokenizer.decode(tokenizer.encode("hello world!"))
 ```
 
-    /home/zhangfaen/miniconda3/envs/py310/lib/python3.10/site-packages/requests/__init__.py:86: RequestsDependencyWarning: Unable to find acceptable character detection dependency (chardet or charset_normalizer).
-      warnings.warn(
-
-
 
 
 
@@ -107,7 +103,12 @@ but since we are implementing llama3 from scratch we will read the file one tens
 
 
 ```python
-model = torch.load("Meta-Llama-3-8B/consolidated.00.pth")
+device = "cuda:0" # or device = "cpu"
+```
+
+
+```python
+model = torch.load("Meta-Llama-3-8B/consolidated.00.pth", map_location=device)
 print(json.dumps(list(model.keys())[:20], indent=4))
 ```
 
@@ -140,303 +141,303 @@ print(json.dumps(list(model.keys())[:20], indent=4))
 print(len(model))
 total_params = sum([torch.prod(torch.tensor(p.shape)) for p in model.values()])
 print(f"total_params:{total_params}")
-for key in model.keys():
-    print(key, model[key].shape, type(model[key]), f"{torch.prod(torch.tensor(model[key].shape)) / total_params:.2%}")
+for k,v in model.items():
+    print(k, v.shape, type(v), v.device, f"{torch.prod(torch.tensor(v.shape)) / total_params:.2%}")
 ```
 
     291
     total_params:8030261248
-    tok_embeddings.weight torch.Size([128256, 4096]) <class 'torch.Tensor'> 6.54%
-    layers.0.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.0.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.0.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.0.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.0.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.0.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.0.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.0.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.0.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.1.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.1.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.1.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.1.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.1.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.1.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.1.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.1.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.1.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.2.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.2.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.2.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.2.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.2.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.2.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.2.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.2.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.2.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.3.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.3.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.3.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.3.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.3.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.3.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.3.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.3.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.3.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.4.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.4.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.4.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.4.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.4.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.4.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.4.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.4.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.4.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.5.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.5.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.5.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.5.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.5.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.5.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.5.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.5.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.5.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.6.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.6.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.6.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.6.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.6.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.6.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.6.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.6.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.6.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.7.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.7.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.7.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.7.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.7.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.7.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.7.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.7.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.7.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.8.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.8.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.8.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.8.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.8.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.8.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.8.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.8.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.8.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.9.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.9.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.9.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.9.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.9.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.9.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.9.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.9.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.9.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.10.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.10.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.10.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.10.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.10.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.10.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.10.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.10.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.10.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.11.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.11.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.11.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.11.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.11.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.11.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.11.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.11.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.11.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.12.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.12.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.12.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.12.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.12.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.12.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.12.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.12.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.12.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.13.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.13.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.13.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.13.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.13.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.13.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.13.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.13.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.13.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.14.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.14.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.14.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.14.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.14.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.14.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.14.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.14.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.14.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.15.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.15.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.15.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.15.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.15.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.15.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.15.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.15.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.15.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.16.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.16.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.16.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.16.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.16.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.16.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.16.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.16.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.16.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.17.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.17.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.17.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.17.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.17.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.17.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.17.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.17.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.17.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.18.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.18.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.18.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.18.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.18.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.18.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.18.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.18.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.18.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.19.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.19.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.19.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.19.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.19.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.19.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.19.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.19.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.19.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.20.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.20.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.20.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.20.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.20.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.20.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.20.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.20.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.20.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.21.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.21.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.21.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.21.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.21.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.21.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.21.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.21.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.21.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.22.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.22.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.22.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.22.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.22.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.22.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.22.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.22.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.22.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.23.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.23.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.23.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.23.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.23.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.23.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.23.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.23.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.23.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.24.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.24.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.24.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.24.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.24.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.24.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.24.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.24.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.24.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.25.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.25.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.25.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.25.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.25.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.25.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.25.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.25.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.25.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.26.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.26.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.26.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.26.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.26.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.26.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.26.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.26.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.26.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.27.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.27.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.27.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.27.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.27.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.27.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.27.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.27.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.27.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.28.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.28.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.28.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.28.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.28.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.28.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.28.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.28.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.28.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.29.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.29.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.29.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.29.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.29.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.29.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.29.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.29.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.29.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.30.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.30.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.30.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.30.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.30.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.30.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.30.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.30.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.30.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.31.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.31.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.31.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> 0.05%
-    layers.31.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> 0.21%
-    layers.31.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.31.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> 0.73%
-    layers.31.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> 0.73%
-    layers.31.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    layers.31.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    norm.weight torch.Size([4096]) <class 'torch.Tensor'> 0.00%
-    output.weight torch.Size([128256, 4096]) <class 'torch.Tensor'> 6.54%
+    tok_embeddings.weight torch.Size([128256, 4096]) <class 'torch.Tensor'> cuda:0 6.54%
+    layers.0.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.0.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.0.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.0.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.0.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.0.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.0.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.0.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.0.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.1.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.1.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.1.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.1.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.1.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.1.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.1.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.1.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.1.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.2.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.2.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.2.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.2.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.2.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.2.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.2.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.2.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.2.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.3.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.3.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.3.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.3.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.3.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.3.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.3.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.3.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.3.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.4.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.4.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.4.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.4.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.4.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.4.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.4.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.4.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.4.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.5.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.5.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.5.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.5.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.5.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.5.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.5.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.5.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.5.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.6.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.6.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.6.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.6.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.6.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.6.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.6.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.6.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.6.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.7.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.7.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.7.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.7.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.7.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.7.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.7.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.7.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.7.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.8.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.8.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.8.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.8.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.8.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.8.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.8.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.8.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.8.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.9.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.9.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.9.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.9.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.9.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.9.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.9.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.9.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.9.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.10.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.10.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.10.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.10.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.10.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.10.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.10.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.10.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.10.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.11.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.11.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.11.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.11.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.11.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.11.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.11.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.11.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.11.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.12.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.12.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.12.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.12.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.12.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.12.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.12.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.12.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.12.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.13.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.13.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.13.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.13.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.13.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.13.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.13.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.13.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.13.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.14.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.14.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.14.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.14.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.14.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.14.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.14.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.14.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.14.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.15.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.15.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.15.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.15.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.15.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.15.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.15.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.15.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.15.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.16.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.16.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.16.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.16.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.16.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.16.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.16.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.16.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.16.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.17.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.17.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.17.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.17.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.17.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.17.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.17.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.17.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.17.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.18.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.18.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.18.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.18.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.18.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.18.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.18.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.18.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.18.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.19.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.19.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.19.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.19.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.19.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.19.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.19.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.19.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.19.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.20.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.20.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.20.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.20.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.20.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.20.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.20.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.20.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.20.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.21.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.21.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.21.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.21.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.21.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.21.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.21.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.21.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.21.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.22.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.22.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.22.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.22.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.22.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.22.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.22.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.22.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.22.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.23.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.23.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.23.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.23.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.23.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.23.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.23.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.23.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.23.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.24.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.24.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.24.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.24.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.24.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.24.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.24.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.24.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.24.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.25.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.25.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.25.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.25.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.25.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.25.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.25.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.25.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.25.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.26.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.26.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.26.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.26.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.26.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.26.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.26.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.26.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.26.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.27.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.27.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.27.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.27.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.27.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.27.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.27.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.27.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.27.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.28.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.28.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.28.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.28.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.28.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.28.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.28.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.28.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.28.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.29.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.29.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.29.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.29.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.29.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.29.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.29.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.29.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.29.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.30.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.30.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.30.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.30.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.30.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.30.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.30.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.30.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.30.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.31.attention.wq.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.31.attention.wk.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.31.attention.wv.weight torch.Size([1024, 4096]) <class 'torch.Tensor'> cuda:0 0.05%
+    layers.31.attention.wo.weight torch.Size([4096, 4096]) <class 'torch.Tensor'> cuda:0 0.21%
+    layers.31.feed_forward.w1.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.31.feed_forward.w3.weight torch.Size([14336, 4096]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.31.feed_forward.w2.weight torch.Size([4096, 14336]) <class 'torch.Tensor'> cuda:0 0.73%
+    layers.31.attention_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    layers.31.ffn_norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    norm.weight torch.Size([4096]) <class 'torch.Tensor'> cuda:0 0.00%
+    output.weight torch.Size([128256, 4096]) <class 'torch.Tensor'> cuda:0 6.54%
 
 
 
@@ -490,7 +491,7 @@ here we use tiktoken (i think an openai library) as the tokenizer
 prompt = "the answer to the ultimate question of life, the universe, and everything is "
 tokens = [128000] + tokenizer.encode(prompt)
 print(tokens)
-tokens = torch.tensor(tokens)
+tokens = torch.tensor(tokens, device=device)
 prompt_split_as_tokens = [tokenizer.decode([token.item()]) for token in tokens]
 print(prompt_split_as_tokens)
 ```
@@ -513,7 +514,7 @@ note: keep track of the shapes, it makes it much easier to understand everything
 
 
 ```python
-embedding_layer = torch.nn.Embedding(vocab_size, dim)
+embedding_layer = torch.nn.Embedding(vocab_size, dim, device=device)
 embedding_layer.weight.data.copy_(model["tok_embeddings.weight"])
 token_embeddings_unnormalized = embedding_layer(tokens).to(torch.bfloat16)
 token_embeddings_unnormalized.shape
@@ -595,7 +596,8 @@ print(token_embeddings_unnormalized.pow(2).mean(-1, keepdim=True))
             [3.1471e-05],
             [6.9141e-05],
             [2.9564e-05],
-            [2.7418e-05]], dtype=torch.bfloat16, grad_fn=<MeanBackward1>)
+            [2.7418e-05]], device='cuda:0', dtype=torch.bfloat16,
+           grad_fn=<MeanBackward1>)
 
 
 ### attention implemented from scratch
@@ -727,7 +729,7 @@ we now have a vector of size [17x64x2], this is the 128 length queries split int
 
 
 ```python
-zero_to_one_split_into_64_parts = torch.tensor(range(64))/64
+zero_to_one_split_into_64_parts = torch.tensor(range(64), device=device)/64
 zero_to_one_split_into_64_parts
 ```
 
@@ -741,7 +743,7 @@ zero_to_one_split_into_64_parts
             0.5625, 0.5781, 0.5938, 0.6094, 0.6250, 0.6406, 0.6562, 0.6719, 0.6875,
             0.7031, 0.7188, 0.7344, 0.7500, 0.7656, 0.7812, 0.7969, 0.8125, 0.8281,
             0.8438, 0.8594, 0.8750, 0.8906, 0.9062, 0.9219, 0.9375, 0.9531, 0.9688,
-            0.9844])
+            0.9844], device='cuda:0')
 
 
 
@@ -763,12 +765,12 @@ print(freqs)
             1.8199e-04, 1.4825e-04, 1.2077e-04, 9.8381e-05, 8.0143e-05, 6.5286e-05,
             5.3183e-05, 4.3324e-05, 3.5292e-05, 2.8750e-05, 2.3420e-05, 1.9078e-05,
             1.5542e-05, 1.2660e-05, 1.0313e-05, 8.4015e-06, 6.8440e-06, 5.5752e-06,
-            4.5417e-06, 3.6997e-06, 3.0139e-06, 2.4551e-06])
+            4.5417e-06, 3.6997e-06, 3.0139e-06, 2.4551e-06], device='cuda:0')
 
 
 
 ```python
-freqs_for_each_token = torch.outer(torch.arange(17), freqs)
+freqs_for_each_token = torch.outer(torch.arange(17, device=device), freqs)
 print(freqs_for_each_token)
 freqs_cis = torch.polar(torch.ones_like(freqs_for_each_token), freqs_for_each_token)
 print(freqs_cis.shape)
@@ -778,6 +780,7 @@ value = freqs_cis[16]
 print(value.shape)
 plt.figure()
 for i, element in enumerate(value[:20]):
+    element = element.cpu()
     plt.plot([0, element.real], [0, element.imag], color='blue', linewidth=1, label=f"Index: {i}")
     plt.annotate(f"{i}", xy=(element.real, element.imag), color='red')
 plt.xlabel('Real')
@@ -798,14 +801,14 @@ plt.show()
             [1.5000e+01, 1.2219e+01, 9.9540e+00,  ..., 5.5496e-05, 4.5208e-05,
              3.6827e-05],
             [1.6000e+01, 1.3034e+01, 1.0618e+01,  ..., 5.9196e-05, 4.8222e-05,
-             3.9282e-05]])
+             3.9282e-05]], device='cuda:0')
     torch.Size([17, 64])
     torch.Size([64])
 
 
 
     
-![png](llama3-from-scratch_files/llama3-from-scratch_32_1.png)
+![png](llama3-from-scratch_files/llama3-from-scratch_33_1.png)
     
 
 
@@ -829,6 +832,9 @@ for i, ax in enumerate(axs):
         elements = freqs_cis[index]
 
     for i, element in enumerate(elements[:20]):
+        element = element.cpu()
+        ax.plot([0, element.real], [0, element.imag], color='blue', linewidth=1, label=f"Index: {i}")
+        ax.annotate(f"{i}", xy=(element.real, element.imag), color='red')
         ax.plot([0, element.real], [0, element.imag], color='blue', linewidth=1, label=f"Index: {i}")
         ax.annotate(f"{i}", xy=(element.real, element.imag), color='red')
     ax.set_xlabel('Real')
@@ -844,7 +850,7 @@ plt.show()
 
 
     
-![png](llama3-from-scratch_files/llama3-from-scratch_33_0.png)
+![png](llama3-from-scratch_files/llama3-from-scratch_34_0.png)
     
 
 
@@ -1074,18 +1080,18 @@ def display_qk_heatmap(qk_per_token):
     ax.set_yticklabels(prompt_split_as_tokens)
     ax.figure.colorbar(im, ax=ax)
     
-display_qk_heatmap(qk_per_token)
+display_qk_heatmap(qk_per_token.cpu())
 ```
 
 
     
-![png](llama3-from-scratch_files/llama3-from-scratch_53_0.png)
+![png](llama3-from-scratch_files/llama3-from-scratch_54_0.png)
     
 
 
 
 ```python
-mask = torch.full((len(tokens), len(tokens)), float("-inf"), device=tokens.device)
+mask = torch.full((len(tokens), len(tokens)), float("-inf"), device=device)
 mask = torch.triu(mask, diagonal=1)
 mask
 ```
@@ -1109,19 +1115,20 @@ mask
             [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., -inf, -inf, -inf],
             [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., -inf, -inf],
             [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., -inf],
-            [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]])
+            [0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]],
+           device='cuda:0')
 
 
 
 
 ```python
 qk_per_token_after_masking = qk_per_token + mask
-display_qk_heatmap(qk_per_token_after_masking)
+display_qk_heatmap(qk_per_token_after_masking.cpu())
 ```
 
 
     
-![png](llama3-from-scratch_files/llama3-from-scratch_55_0.png)
+![png](llama3-from-scratch_files/llama3-from-scratch_56_0.png)
     
 
 
@@ -1132,12 +1139,12 @@ display_qk_heatmap(qk_per_token_after_masking)
 
 ```python
 qk_per_token_after_masking_after_softmax = torch.nn.functional.softmax(qk_per_token_after_masking, dim=1).to(torch.bfloat16)
-display_qk_heatmap(qk_per_token_after_masking_after_softmax)
+display_qk_heatmap(qk_per_token_after_masking_after_softmax.cpu())
 ```
 
 
     
-![png](llama3-from-scratch_files/llama3-from-scratch_57_0.png)
+![png](llama3-from-scratch_files/llama3-from-scratch_58_0.png)
     
 
 
@@ -1251,7 +1258,7 @@ for head in range(n_heads):
     k_per_token_rotated = k_per_token_split_into_pairs_rotated.view(k_per_token.shape)
 
     qk_per_token = torch.matmul(q_per_token_rotated, k_per_token_rotated.T)/(128)**0.5
-    mask = torch.full((len(tokens), len(tokens)), float("-inf"), device=tokens.device)
+    mask = torch.full((len(tokens), len(tokens)), float("-inf"), device=device)
     mask = torch.triu(mask, diagonal=1)
     qk_per_token_after_masking = qk_per_token + mask
     qk_per_token_after_masking_after_softmax = torch.nn.functional.softmax(qk_per_token_after_masking, dim=1).to(torch.bfloat16)
@@ -1441,7 +1448,7 @@ for layer in range(n_layers):
         k_per_token_split_into_pairs_rotated = torch.view_as_real(k_per_token_as_complex_numbers * freqs_cis)
         k_per_token_rotated = k_per_token_split_into_pairs_rotated.view(k_per_token.shape)
         qk_per_token = torch.matmul(q_per_token_rotated, k_per_token_rotated.T)/(128)**0.5
-        mask = torch.full((len(token_embeddings_unnormalized), len(token_embeddings_unnormalized)), float("-inf"))
+        mask = torch.full((len(token_embeddings_unnormalized), len(token_embeddings_unnormalized)), float("-inf"), device=device)
         mask = torch.triu(mask, diagonal=1)
         qk_per_token_after_masking = qk_per_token + mask
         qk_per_token_after_masking_after_softmax = torch.nn.functional.softmax(qk_per_token_after_masking, dim=1).to(torch.bfloat16)
@@ -1526,7 +1533,7 @@ next_token
 
 
 
-    tensor(2983)
+    tensor(2983, device='cuda:0')
 
 
 
@@ -1546,10 +1553,26 @@ tokenizer.decode([next_token.item()])
     '42'
 
 
-# thank you
 
-I have made lots of changes to original repo.
-1. follow me on twitter https://x.com/faen_zhang
+# thank you, i love you :)
 
-Original repo is https://github.com/naklecha/llama3-from-scratch 
-Thank you naklecha! 
+This is the end. Hopefully you enjoyed reading it!
+
+If you want to support my work
+
+1. follow me on twitter https://twitter.com/naklecha 
+2. or, buy me a coffee [https://www.buymeacoffee.com/naklecha](https://www.buymeacoffee.com/naklecha)
+
+Honestly, if you made it this far you already made my day :)
+
+## what motivates me?
+
+My friends and I are on a mission - to make research more accessible!
+We created a research lab called A10 - [AAAAAAAAAA.org](http://aaaaaaaaaa.org/)
+
+A10 twitter - https://twitter.com/aaaaaaaaaaorg
+
+our thesis:
+<div>
+    <img src="images/a10.png" width="600px"/>
+</div>
